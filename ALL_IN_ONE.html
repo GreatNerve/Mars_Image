@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--     
+    Disinged by : Dheeraj Sharma
+    Publication date : 03 May 2021,
+    Don't copy without permission from Me,
+    Some Data is Hard-code and Not slim code, Not Good practice in Real World Application.
+    API : Wikipedia API, NASA API,
+    Not for Commercial use.
+    
+    Search mars images and read about space.
+    
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mars image gallery">
+    <meta name="keywords" content="Mars">
+    <meta name="author" content="Dheeraj Sharma">
+    <title>Mars Gallery</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+
+::-moz-selection {
+    color: rgb(255, 255, 255);
+    background: rgba(0, 0, 0, 0.699);
+}
+
+::selection {
+    color: rgb(255, 255, 255);
+    background: rgba(0, 0, 0, 0.699);
+}
+
+body {
+    font-family: 'Quicksand', sans-serif!important;
+}
+
+div.loader {
+    height: 256px;
+    margin: 5%;
+}
+
+.gradient {
+    background-image: linear-gradient(49deg, rgb(97 224 148), rgb(55 130 255));
+}
+
+.wiki {
+    cursor: pointer;
+}
+
+.photo {
+    min-height: 256px;
+}
+
+img.articleImg {
+    width: 50%;
+    max-width: 260px;
+    float: right;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: none;
+    background-color: rgb(255, 153, 0);
+    background-image: linear-gradient(315deg, #1fbbf9 0%, #2125fe 74%) !important;
+    border: none !important;
+}
+
+section {
+    position: relative;
+    top: 3.2rem;
+}
+
+section:not(.active) {
+    display: none;
+}
+
+section#about img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+section#about .avatar,
+section#about .avatar img {
+    border-radius: 8%;
+}
+
+section#about .avatar {
+    height: 221px;
+    width: 221px;
+    background-color: #21adfe;
+    background-image: linear-gradient(to top, #88d3ce 0%, #6e45e2 100%);
+}
+
+@media screen and (max-width: 260px) {
+    section#about .avatar {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+#article-area p{
+    text-align: justify;
+}
+
+.social-links a {
+    display: inline-block;
+    margin: 6px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    transition: 0.3s;
+}
+
+.nav-mob-overly {
+    width: 100%;
+    height: 100%;
+    z-index: 997;
+    top: 0;
+    left: 0;
+    position: fixed;
+    background: rgba(52, 59, 64, 0.9);
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .nav-mob-overly {
+        visibility: hidden;
+    }
+
+}
+
+@media (max-width: 767px) {
+    #navbararea::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    #navbararea::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    #navbararea::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    #navbararea::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    #navbararea {
+        position: fixed;
+        top: 3.45rem;
+        left: -292px;
+        bottom: 0px;
+        max-width: 60vw;
+        width: 290px;
+        padding: 1rem;
+        background-color: rgba(0, 0, 0, 0.899);
+        overflow-y: auto;
+        overflow-x: hidden;
+        overflow-wrap: break-word;
+        transition: all 600ms linear
+
+    }
+
+    #navbararea .dropdown-item {
+        white-space: break-spaces !important;
+    }
+
+    #navbararea.show {
+        left: 0px;
+        /* height: 100vh; */
+    }
+
+}
+    </style>
+    
+    <link rel="icon" href="http://pngimg.com/uploads/mars_planet/mars_planet_PNG7.png" type="image/icon type"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/css/bootstrap.min.css"
+        integrity="sha384-VCmXjywReHh4PwowAiWNagnWcLhlEJLA5buUprzK8rxFgeH0kww/aWY76TfkUoSX" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/venobox/1.9.0/venobox.min.css"
+        integrity="sha512-e+0yqAgUQFoRrJ4pZigQXpOE0S7J9IGwmgH801h4H5ODqOCG8/GRfXHQ+9ab754NL79O7wDwdjwY3CcU8sEANg=="
+        crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- <script src="http://code.jquery.com/jquery-latest.min.js" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/venobox/1.9.0/venobox.min.js"
+        integrity="sha512-hr9TR9RqJLzyYAkyJH6C9Nalz5kVDzXiNt14tANyuLuSC+7wyxEK94EfqWPBrY7eAlNEkTBowANuFQwKVjTEEw=="
+        crossorigin="anonymous"></script>
+
+    
+</head>
+
+<body>
+    <header class="fixed-top">
+        <nav class="navbar navbar-expand-md navbar-dark text-capitalize"
+            style="background-color: #000000; height: 3.5rem;">
+            <a class="navbar-brand" href="#">
+                <img src="http://pngimg.com/uploads/mars_planet/mars_planet_PNG7.png" width="30" height="30" alt=""
+                    loading="lazy" class="rounded-circle mx-2">mars
+            </a>
+            <button class="navbar-toggler" type="button" style="font-size: 25px;">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="navbar-collapse" id="navbararea">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="india" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">India</a>
+                        <div class="dropdown-menu" aria-labelledby="india">
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=14533">India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=14597">Geography of India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=293133">Culture of India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=2781944">Indian astronomy</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=1848052">Indian mathematics</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=7564733">Indian people</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=9466823">Wildlife of India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=3298895">Flora of India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=343949">Indian Army</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=604522">Indian Navy</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=403355">Indian Air Force</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=375986">States and union territories of India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=11572324">Indian inventions and discoveries</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=141896">President of India</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=24452">Prime Minister of India</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="Planets" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">Planets</a>
+                        <div class="dropdown-menu" aria-labelledby="india">
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=19694">Mercury</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=32745">Venus</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=9228">Earth</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=14640471">Mars</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=38930">Jupiter </a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=44474">Saturn </a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=44475">Uranus</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=19003265">Neptune</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="Space Missions" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">Space Missions</a>
+                        <div class="dropdown-menu" aria-labelledby="india">
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=1024431">Chandrayaan-1</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=19884971">Chandrayaan-2</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=36627950">Mars Orbiter Mission</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=9070010">ASTROSAT</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=1461">Apollo program</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=60758751">Artemis program</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=15043">International Space Station</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=47795">Voyager program</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=60457571">European Space Agency Science Programme</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="Solar System" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">Solar System</a>
+                        <div class="dropdown-menu" aria-labelledby="india">
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=26903">Solar System</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=26751">Sun</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=22915">Planet</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=6395779">Dwarf planet</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=27683">Satellite</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=791">Asteroid</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=63793">Meteoroid</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=5962">Comet</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=47264">Asteroid belt</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=16796">Kuiper belt</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=22385">Oort cloud</a>
+                            <a class="dropdown-item data-link" target="_blank"
+                                href="https://en.wikipedia.org/wiki?curid=1131151">Heliosphere</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link me" href="#" title="About Developer">about</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <section id="gallery" class="active">
+        <div class="container my-3" style="width: 400px; max-width: 100%;">
+            <input type="date" name="" id="date-input" class="form-control">
+        </div>
+        <div id="gallery-area" class="container">
+            <div class="card mb-3 rounded d-flex justify-content-center align-items-center bg-light loader gradient">
+                <div class="m-3 spinner-border text-success" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                Loading...
+            </div>
+        </div>
+    </section>
+    <section id="article" class="py-3 align-items-center">
+        <div id="article-area">
+        </div>
+    </section>
+    <section id="about" class="px-4">
+        <div class=" d-flex flex-column align-items-center p-4">
+            <div class="avatar">
+                <img src="https://api.sololearn.com/Uploads/Avatars/8384697.jpg" alt="Dheeraj Sharma">
+            </div>
+            <div class="text-center px-3 py-2">
+                <h3>Dheeraj Sharma</h3>
+                <div class="social-links m-3 text-center">
+                    <a href="https://www.sololearn.com/Profile/8384697" target="_blank"><img
+                            src="https://www.sololearn.com//Images/favicon-192x192.png" alt="sololearn"></a>
+                    <a href="https://github.com/GreatNerve" target="_blank"><img
+                            src="https://upload.wikimedia.org/wikipedia/commons/9/95/Font_Awesome_5_brands_github.svg"
+                            alt="E-mail"></a>
+
+                    <a href="https://stackoverflow.com/users/13444609/dheeraj-sharma" target="_blank"><img
+                            src="https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png"
+                            alt="Stack Overflow"></a>
+                </div>
+                <h6 class="mx-3 text-break">This project is devloped by me for just fun.</h6>
+                <button class="btn btn-outline-primary mt-2 back-home" type="button">Back to home</button>
+            </div>
+        </div>
+        <hr>
+    </section>
+
+    <button id="back-to-top" class="btn back-to-top text-light">
+        <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </button>
+    <div class="nav-mob-overly"></div>
+</body>
+    <script>
+        
+const loader = `<div class="card mb-3 rounded d-flex justify-content-center align-items-center bg-light loader gradient"><div class="m-3 spinner-border text-success" role="status"><span class="sr-only">Loading...</span></div>Loading...</div>`;
+function backToHome() {
+    $('.back-home').click(function () {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 600, 'swing');
+        $('.nav-item.active').removeClass('active');
+        $('.nav-link:contains(home)').closest('.nav-item').addClass('active');
+        if (!$('#gallery').hasClass('active')) {
+            $('section.active').removeClass('active');
+            $('#gallery').addClass('active');
+        }
+    });  
+  return false;
+}
+
+var gallery;
+var article;
+$(document).ready(function () {
+    $('#about').addClass('active');
+    $('#gallery').addClass('active');
+    $('#about.active').removeClass('active');
+    Swal.fire({
+        icon: 'success',
+        title: "Mars",
+        text: `Welcome all the space lovers.`,
+        footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+    });
+    $('#gallery-area').empty();
+    $('#article-area').empty();
+    $('.venobox').venobox({ titleattr: 'data-title', share: ['facebook', 'twitter', 'linkedin', 'pinterest', 'download'] });
+    $(document).on('click', '.navbar-toggler', function (e) {
+        $('#navbararea').toggleClass('show');
+        $('.nav-mob-overly').fadeToggle(400);
+        $('.navbar-toggler i').toggleClass('fa-bars fa-times');
+        return false;
+    });
+    $(document).click(function (e) {
+        let navToggle = $(".navbar-toggler");
+        if (!navToggle.is(e.target) && navToggle.has(e.target).length === 0) {
+            if ($('#navbararea').hasClass('show')) {
+                $('#navbararea').removeClass('show');
+                $('.nav-mob-overly').fadeOut(400);
+                $('.navbar-toggler i').toggleClass('fa-bars fa-times');
+            }
+        }
+    });
+    startup();
+    window.addEventListener('online', function () {
+        let card = document.getElementById('gallery').getElementsByClassName('card');
+        if (card.length == 1) {
+            startup();
+        }
+        return false;
+    });
+});
+function startup() {
+    article = new Wikipedia();
+    $(".navbar-brand").click(function (event) {
+        event.preventDefault();
+        $('section.active').removeClass('active');
+        let l = $(loader);
+        l.addClass('container');
+        $('#article-area').append(l);
+        $('.nav-item.active').removeClass('active');
+        $('.nav-link:contains(about)').closest('.nav-item').addClass('active');
+        $('#article').toggleClass('active');
+        article.GetArticle('14640471', 'pageids');
+    });
+    $('.nav-link:contains(home)').click(function (e) {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 1000, 'swing');
+        let elem;
+        e.preventDefault();
+        $('.nav-item.active').removeClass('active');
+        $(this).closest('.nav-item').addClass('active');
+        $('section.active').removeClass('active');
+        switch (this.innerText.toLowerCase()) {
+            case 'about':
+                $('#about').addClass('active');
+                break;
+            default:
+                $('#gallery').addClass('active');
+                elem = document.querySelectorAll('#gallery-area>.card:not(.loader)');
+                if (elem.length == 0) {
+                    gallery = new http('ksriEV9rsoIaTWvq6ZGhdWglSWWQ700zmABU11Yc');
+                }
+        }
+    });
+    gallery = new http('ksriEV9rsoIaTWvq6ZGhdWglSWWQ700zmABU11Yc');
+    $('#date-input').change(function () {
+        gallery = new http('ksriEV9rsoIaTWvq6ZGhdWglSWWQ700zmABU11Yc');
+
+    });
+    $(window).scroll(function () {
+        let scrollTop = $(this).scrollTop();
+        let scrollHeight = $(document).height();
+        let scrollPosition = $(this).height() + scrollTop;
+        if (scrollTop > 100) {
+            $('.back-to-top').fadeIn('slow');
+        } else {
+            $('.back-to-top').fadeOut('slow');
+        }
+        if ((scrollHeight - scrollPosition) / scrollHeight <= 0.015) {
+            if ($('#gallery').hasClass('active')) {
+                gallery.addScrollContent();
+            }
+        }
+        return false;
+    });
+    $('a.data-link').click(function (e) {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 1000, 'swing');
+        e.preventDefault();
+        let quarry = $(this).attr('href').trim().toLowerCase().replace('https://en.wikipedia.org/wiki?curid=', '');
+        if (quarry) {
+            article.GetArticle(quarry, 'pageids', elem = this);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: "Invalid link",
+                text: `Sorry, this link is invalid so we are not able to complete this request.`,
+                footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+            });
+        }
+    });
+
+    $('.back-to-top').click(function () {
+        gallery.addScrollContent()
+        $('html, body').animate({
+            scrollTop: 0
+        }, 1000, 'swing');
+        return false;
+    });
+    $(document).on('click', '.me', function (e) {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 1000, 'swing');
+        if (!($('#about').find('h3').text() == 'Dheeraj Sharma')) {
+            $('#about').empty();
+            $('#about').append(`<div class=" d-flex flex-column align-items-center p-4"><div class="avatar"><img src="https://api.sololearn.com/Uploads/Avatars/8384697.jpg" alt="Dheeraj Sharma"></div><div class="text-center px-3 py-2"><h3>Dheeraj Sharma</h3><div class="social-links m-3 text-center"><a href="https://www.sololearn.com/Profile/8384697" target="_blank"><img src="https://www.sololearn.com//Images/favicon-192x192.png" alt="sololearn"></a><a href="https://github.com/GreatNerve" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Font_Awesome_5_brands_github.svg" alt="github"></a><a href="https://stackoverflow.com/users/13444609/dheeraj-sharma" target="_blank"><img src="https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png" alt="Stack Overflow"></a></div><h6 class="mx-3 text-break">This project is devloped by me for just fun.</h6><button class="btn btn-outline-primary mt-2 back-home" type="button">Back to home</button></div></div><hr>`);
+        }
+        e.preventDefault();
+        Swal.close();
+        $('.nav-item.active').removeClass('active');
+        $('.nav-link:contains(about)').closest('.nav-item').addClass('active');
+
+        if (!$('#about').hasClass('active')) {
+            $('section.active').removeClass('active');
+            $('#about').addClass('active');
+        }
+        backToHome();
+    });
+}
+
+class http {
+
+    constructor(api_key = "ksriEV9rsoIaTWvq6ZGhdWglSWWQ700zmABU11Yc", target = "#gallery-area", httpURL = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos") {
+        this.pos = 0;
+        this.photos;
+        this.api_key = api_key;
+        this.httpURL = httpURL;
+        this.target = target;
+        this.Get();
+    }
+    Get() {
+        this.datePicker = document.querySelector("#date-input");
+        if (this.datePicker.value == "" || this.datePicker.value == undefined || this.datePicker.value == null) {
+            let curDate = new Date()
+            curDate.setDate(curDate.getDate() - 1);
+            this.datePicker.valueAsDate = curDate;
+        }
+        let DateQuarry = new Date(this.datePicker.valueAsDate);
+        let curDate = new Date()
+        if (DateQuarry.getFullYear() < curDate.getFullYear() ||
+            (DateQuarry.getFullYear() == curDate.getFullYear() &&
+            DateQuarry.getMonth() <= curDate.getMonth() &&
+            (DateQuarry.getMonth() < curDate.getMonth() ? true : DateQuarry.getDate() < curDate.getDate()))
+        ) {
+            let dataSend = {
+                "earth_date": `${DateQuarry.getUTCFullYear()}-${(DateQuarry.getUTCMonth() + 1).toString().padStart(2, "0")}-${DateQuarry.getUTCDate().toString().padStart(2, "0")}`,
+                "api_key": this.api_key
+            };
+            $(`${this.target}>.loader`).remove();
+            $(`${this.target}>.card`).hide();
+            $(this.target).append(loader);
+            let cls = this;
+            jQuery.ajax({
+                url: this.httpURL,
+                type: "get",
+                data: dataSend,
+                async: true,
+                timeout: 5000,
+                dataType: 'json',
+                success: function (responce, status, xhr) {
+                    if (responce.photos != undefined && responce.photos != null && responce.photos.length > 0) {
+                        $(cls.target).empty();
+                        $(cls.target).append(loader);
+                        cls.pos = 0;
+                        cls.photos = responce.photos;
+                        cls.addScrollContent();
+                    } else {
+                        cls.DateinputError("No image found", `Sorry, We didn't found any image on ${DateQuarry.toDateString()},`);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    cls.dateFix();
+                    if (error == "") {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: "No Internet",
+                            html: `<div align="left">Try :<blockquote><small><ul><li>Checking the network cables, modem, and router</li><li>Reconnecting to Wi-Fi</li></ul></small></blockquote></div>`,
+                            footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: error,
+                            text: `Sorry, we are not able to complete this request.`,
+                            footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+                        });
+                    }
+                }
+            });
+        } else {
+            this.dateFix();
+            Swal.fire({
+                icon: 'error',
+                title: "Past days only are allow.",
+                text: `Sorry, we are try to figure out the technology to get information from future.`,
+                footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+            });
+
+        }
+    }
+    dateFix() {
+        let card = document.getElementById('gallery').getElementsByClassName('card');
+        let curDate = new Date();
+        if (card.length > 1) {
+            $(`${this.target}>.loader`).remove();
+            $('.card').show();
+            try {
+                let preDate = card[0].getElementsByTagName('small')[0];
+                if (preDate != undefined) {
+                    this.datePicker.valueAsDate = (new Date(`${preDate.innerText} ${curDate.getUTCHours()}:${curDate.getUTCMinutes()}:${curDate.getUTCSeconds()} GMT`));
+                }
+            }
+            catch (err) {
+            }
+        } else {
+            curDate.setDate(curDate.getDate() - 1);
+            this.datePicker.valueAsDate = curDate;
+
+        }
+    }
+    DateinputError(heading = "", msg = "") {
+        let date = new Date(this.datePicker.valueAsDate);
+        date.setDate(date.getDate() - 1);
+        Swal.fire({
+            title: heading,
+            html: `${msg} you want to stay on previous result or see result of ${date.toDateString()}.`,
+            icon: 'error',
+            footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`,
+            showCancelButton: true,
+            confirmButtonColor: '#aaa',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Stya there',
+            cancelButtonText: "Redirect"
+        }).then((result) => {
+            if (result.value) {
+                this.dateFix();
+            } else {
+                $(`${this.target}>.loader`).remove();
+                this.datePicker.valueAsDate = date;
+                this.Get(this.api_key);
+            }
+        })
+    }
+    addScrollContent(len) {
+        if (this.pos != undefined && this.photos != undefined && this.photos.length > 0) {
+            let add = (len != undefined || len != null) ? len : 2;
+            this.pos = Math.min(this.pos, this.photos.length);
+            let newPos = Math.min(this.pos + add, this.photos.length);
+            let figure = this.photos.slice(this.pos, newPos);
+            if (newPos > this.pos) {
+                if (this.pos != 0) {
+                    $(this.target).append(loader);
+                }
+                this.setGallery(figure, this.target);
+                this.pos = newPos;
+            }
+        }
+    }
+
+    setGallery(data, target) {
+        for (let card of data) {
+            let elem = `<div class="card mb-3 rounded d-none">
+                            <a class="venobox bg-secondary photo gradient" href="${card.img_src}" data-title='Sol ${card.sol} of ${card.rover.name} rover'>
+                                <img src="${card.img_src}" class="card-img-top photo" alt="Sol ${card.sol}">
+                            </a>
+                        <div class="card-body">
+                            <h5 class="card-title">Sol ${card.sol} of <a class="wiki" href='#'>${card.rover.name} rover</a></h5>
+                            <p class="card-text">This images is take by ${card.camera.name}(${card.camera.full_name}) camera of <a class="wiki" href='#'>${card.rover.name} rover</a>.</p>
+                            <p class="card-text"><small class="text-muted">${new Date(new Date(`${card.earth_date} 00:00:00 GMT+0000`)).toDateString()}</small></p>
+                        </div>
+                        </div>`;
+            $(target).append(elem);
+        }
+        $("a.wiki").click(function (event) {
+            event.preventDefault();
+            $('section.active').removeClass('active');
+            let l = $(loader);
+            l.addClass('container');
+            $('#article-area').append(l);
+            $('.nav-item.active').removeClass('active');
+            $('.nav-link:contains(about)').closest('.nav-item').addClass('active');
+            $('#article-area').empty();
+            $('#article').toggleClass('active');
+            article.GetArticle(this.innerText);
+        });
+        $(`${this.target}>.loader`).remove();
+        $('.venobox').venobox({ titleattr: 'data-title', share: ['facebook', 'twitter', 'linkedin', 'pinterest', 'download'] });
+        $(`${this.target}>.card.d-none`).removeClass('d-none');
+    }
+}
+
+class Wikipedia {
+    constructor(target = '#article-area', apiURL = 'https://en.wikipedia.org/w/api.php') {
+        this.apiURL = apiURL;
+        this.target = target;
+        this.article;
+        this.suggestion = {
+            key: Array(),
+            value: Array(),
+            status: true
+        };
+    }
+    getSuggestion(elem, value) {
+        let dataSend = {
+            gsrsearch: value.trim().toLowerCase(),
+            action: 'query',
+            generator: 'search',
+            utf8: 1,
+            format: 'json'
+        };
+        let cls = this;
+        jQuery.ajax({
+            url: this.apiURL,
+            type: 'get',
+            data: dataSend,
+            dataType: 'jsonp',
+            timeout: 5000,
+            crossDomain: true,
+            async: true,
+            success: function (responce, status, xhr) {
+                if (status == 'success') {
+                    try {
+                        if (responce.query != undefined) {
+                            let sortArray = Array();
+                            for (let pg in responce.query.pages) {
+                                sortArray.push(responce.query.pages[pg]);
+                            }
+                            sortArray.sort(function (el1, el2) {
+                                return el1.index - el2.index;
+                            });
+                            for (let pg in sortArray) {
+                                cls.suggestion.key.push(sortArray[pg].title.toLowerCase());
+                                cls.suggestion.value.push(sortArray[pg].pageid);
+                            }
+                            cls.suggestion.status = true;
+                            $(elem).autocomplete({
+                                source: Array(...new Set(cls.suggestion.key))
+                            });
+                            $(elem).data("uiAutocomplete").search(value);
+                            return true;
+                        }
+                    } catch (error) {
+
+                    }
+                }
+            }
+        });
+    }
+    GetArticle(value = 'Curiosity rover', type = 'titles', elem) {
+        $(this.target).children('.loader').remove();
+        $(this.target).children().hide();
+        $(this.target).prepend(loader);
+        let dataSend = {
+            [type]: value.toString().trim().toLowerCase(),
+            action: 'query',
+            format: 'json',
+            redirects: 1,
+            prop: 'extracts',
+            exintro: '',
+            explaintext: ''
+        };
+        let cls = this;
+        jQuery.ajax({
+            url: this.apiURL,
+            type: 'get',
+            data: dataSend,
+            dataType: 'jsonp',
+            timeout: 5000,
+            crossDomain: true,
+            async: true,
+            success: function (responce, status, xhr) {
+                if (status == 'success') {
+                    cls.article = responce;
+                    for (let pg in cls.article.query.pages) {
+                        if (pg != undefined && pg != '-1') {
+                            let dataImgSend = {
+                                pageids: pg,
+                                action: 'query',
+                                format: 'json',
+                                redirects: 1,
+                                prop: 'pageimages',
+                                piprop: 'original'
+                            };
+                            jQuery.ajax({
+                                url: cls.apiURL,
+                                type: 'get',
+                                data: dataImgSend,
+                                dataType: 'jsonp',
+                                timeout: 5000,
+                                crossDomain: true,
+                                async: true,
+                                success: function (responce, status, xhr) {
+                                    if (status == 'success') {
+                                        $(cls.target).empty();
+                                        $(cls.target).prepend(loader);
+                                        try {
+                                            cls.article.query.pages[pg].img = responce.query.pages[pg].original.source != undefined ? responce.query.pages[pg].original.source : '';
+                                            cls.setArticle(pg, cls.target);
+                                        } catch (error) {
+                                            cls.article.query.pages[pg].img = '';
+                                            cls.setArticle(pg, cls.target);
+                                        }
+                                    }
+                                    return false;
+                                },
+                                error: function (xhr, status, error) {
+                                    cls.article.query.pages[pg].img = '';
+                                    cls.setArticle(pg, cls.target);
+                                    return false;
+                                }
+                            });
+                        } else {
+                            $(cls.target).children().show();
+                            if ($(cls.target).children('article').length > 0) {
+                                $(cls.target).children('.loader').remove();
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: "No article found",
+                                text: `Sorry, We didn't found any article related on subject ${value}.`,
+                                footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+                            });
+                            return false;
+                        }
+                    }
+                    if (elem) {
+                        $('.nav-item.active').removeClass('active');
+                        $(elem).closest('.nav-item').addClass('active');
+                        if (!$('#article').hasClass('active')) {
+                            $('section.active').removeClass('active');
+                            $('#article').addClass('active');
+                        }
+                    }
+                }
+                return false;
+            }, error: function (xhr, status, error) {
+                $(cls.target).children().show();
+                if ($(cls.target).children('article').length > 0) {
+                    $(cls.target).children('.loader').remove();
+                }
+                if (error == "") {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: "No Internet",
+                        html: `<div align="left">Try :<blockquote><small><ul><li>Checking the network cables, modem, and router</li><li>Reconnecting to Wi-Fi</li></ul></small></blockquote></div>`,
+                        footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+                    });
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: error.toUpperCase(),
+                        text: `Sorry, we are not able to complete this request.`,
+                        footer: `<span>Developed by : <a target="_blank" class="me" href="https://www.sololearn.com/Profile/8384697">Dheeraj Sharma</a></span>`
+                    });
+                }
+                return false;
+            }
+        });
+    }
+    setArticle(pg, target) {
+        if (pg &&
+            target &&
+            this.article &&
+            this.article.query.pages &&
+            this.article.query.pages[pg]) {
+            $('#quarry').blur();
+            let elem = $(`<article></article>`);
+            let div = $('<div></div>');
+            let footer = $('<div></div>').attr({ align: 'center' });
+            elem.attr({ class: 'container-fluid px-4 mb-1' });
+            div.attr({ class: "clearfix" });
+            if (this.article.query.pages[pg].img) {
+                let aimg = $('<a></a>').attr({
+                    class: 'venobox',
+                    href: this.article.query.pages[pg].img,
+                    'data-title': this.article.query.pages[pg].title
+                });
+                aimg.append($('<img>').attr({
+                    class: 'mx-3 articleImg',
+                    src: this.article.query.pages[pg].img
+                }));
+                div.append(aimg);
+            }
+            div.append($('<p></p>').text(this.article.query.pages[pg].extract));
+            let div_buttons = $('<div></div');
+
+            div_buttons.append($('<a></a>').attr({
+                class: 'btn btn-outline-info w-auto m-2',
+                href: `https://en.wikipedia.org/wiki?curid=${pg}`,
+                target: '_blank'
+            }).text('Full article'));
+            div_buttons.append($('<button></button>').attr({
+                class : 'btn btn-outline-success w-auto m-2 back-home',
+                type : 'button'
+            }).text('Back to home'));
+            footer.append(div_buttons);
+            footer.append($('<hr>'));
+
+            elem.append($('<h3></h3>').text(this.article.query.pages[pg].title));
+            elem.append($('<hr>').attr({ class: 'my-2' }));
+            elem.append(div);
+            elem.append(footer);
+            elem.hide();
+            $(target).append(elem);
+
+            backToHome();
+            $(this.target).children('.loader').fadeOut(200, function () {
+                $(this).remove();
+            });
+            elem.fadeIn(2200);
+            $('.venobox').venobox({ spinner: 'three-bounce', titleattr: 'data-title', share: ['facebook', 'twitter', 'linkedin', 'pinterest', 'download'] });
+            return false;
+
+        }
+    }
+}
+
+    </script>
+</html>
