@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+
+::-moz-selection {
+    color: rgb(255, 255, 255);
+    background: rgba(0, 0, 0, 0.699);
+}
+
+::selection {
+    color: rgb(255, 255, 255);
+    background: rgba(0, 0, 0, 0.699);
+}
+
+body {
+    font-family: 'Quicksand', sans-serif!important;
+}
+
+div.loader {
+    height: 256px;
+    margin: 5%;
+}
+
+.gradient {
+    background-image: linear-gradient(49deg, rgb(97 224 148), rgb(55 130 255));
+}
+
+.wiki {
+    cursor: pointer;
+}
+
+.photo {
+    min-height: 256px;
+}
+
+img.articleImg {
+    width: 50%;
+    max-width: 260px;
+    float: right;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: none;
+    background-color: rgb(255, 153, 0);
+    background-image: linear-gradient(315deg, #1fbbf9 0%, #2125fe 74%) !important;
+    border: none !important;
+}
+
+section {
+    position: relative;
+    top: 3.2rem;
+}
+
+section:not(.active) {
+    display: none;
+}
+
+section#about img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+section#about .avatar,
+section#about .avatar img {
+    border-radius: 8%;
+}
+
+section#about .avatar {
+    height: 221px;
+    width: 221px;
+    background-color: #21adfe;
+    background-image: linear-gradient(to top, #88d3ce 0%, #6e45e2 100%);
+}
+
+@media screen and (max-width: 260px) {
+    section#about .avatar {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+#article-area p{
+    text-align: justify;
+}
+
+.social-links a {
+    display: inline-block;
+    margin: 6px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    transition: 0.3s;
+}
+
+.nav-mob-overly {
+    width: 100%;
+    height: 100%;
+    z-index: 997;
+    top: 0;
+    left: 0;
+    position: fixed;
+    background: rgba(52, 59, 64, 0.9);
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .nav-mob-overly {
+        visibility: hidden;
+    }
+
+}
+
+@media (max-width: 767px) {
+    #navbararea::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    #navbararea::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    #navbararea::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    #navbararea::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    #navbararea {
+        position: fixed;
+        top: 3.45rem;
+        left: -292px;
+        bottom: 0px;
+        max-width: 60vw;
+        width: 290px;
+        padding: 1rem;
+        background-color: rgba(0, 0, 0, 0.899);
+        overflow-y: auto;
+        overflow-x: hidden;
+        overflow-wrap: break-word;
+        transition: all 600ms linear
+
+    }
+
+    #navbararea .dropdown-item {
+        white-space: break-spaces !important;
+    }
+
+    #navbararea.show {
+        left: 0px;
+        /* height: 100vh; */
+    }
+
+}
