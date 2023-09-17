@@ -103,7 +103,7 @@ function startup() {
         } else {
             $('.back-to-top').fadeOut('slow');
         }
-        if ((scrollHeight - scrollPosition) / scrollHeight <= 0.015) {
+        if ((scrollHeight - scrollPosition) / scrollHeight <= 0.025) {
             if ($('#gallery').hasClass('active')) {
                 gallery.addScrollContent();
             }
