@@ -6,4 +6,4 @@
 Social Media - 
 Instagram - https://www.instagram.com/greatnerve/?hl=en
 Linkin - https://in.linkedin.com/in/greatnerve
-Sololearn - https://www.sololearn.com/profile/8384697
+Sololearn - https://github.com/GreatNerve
