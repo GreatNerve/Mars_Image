@@ -333,7 +333,7 @@ class http {
             }
         })
     }
-    addScrollContent(len) {
+    addScrollContent(len=10) {
         if (this.pos != undefined && this.photos != undefined && this.photos.length > 0) {
             let add = (len != undefined || len != null) ? len : 2;
             this.pos = Math.min(this.pos, this.photos.length);
